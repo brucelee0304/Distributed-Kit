@@ -1,54 +1,52 @@
 package com.distributed.lock.zk;
 
 import com.distributed.lock.DistributedReentrantLock;
-import com.google.common.collect.Maps;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
-import org.apache.curator.framework.recipes.locks.LockInternalsDriver;
-import org.apache.curator.framework.recipes.locks.StandardLockInternalsDriver;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.concurrent.*;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
- * »ùÓÚZookeeperµÄ¿ÉÖØÈë»¥³âËø(¹ØÓÚÖØÈë:½öÏŞÓÚ³ÖÓĞzkËøµÄjvmÄÚÖØÈë)
+ * åŸºäºZookeeperçš„å¯é‡å…¥äº’æ–¥é”(å…³äºé‡å…¥:ä»…é™äºæŒæœ‰zké”çš„jvmå†…é‡å…¥)
  * Created by sunyujia@aliyun.com on 2016/2/24.
  */
 public class ZkReentrantLock implements DistributedReentrantLock {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(ZkReentrantLock.class);
 
     /**
-     * Ïß³Ì³Ø
+     * çº¿ç¨‹æ± 
      */
     private static final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(10);
 
     /**
-     * ËùÓĞPERSISTENTËø½ÚµãµÄ¸ùÎ»ÖÃ
+     * æ‰€æœ‰PERSISTENTé”èŠ‚ç‚¹çš„æ ¹ä½ç½®
      */
     public static final String ROOT_PATH = "/ROOT_LOCK/";
 
     /**
-     * Ã¿´ÎÑÓ³ÙÇåÀíPERSISTENT½ÚµãµÄÊ±¼ä  Unit:MILLISECONDS
+     * æ¯æ¬¡å»¶è¿Ÿæ¸…ç†PERSISTENTèŠ‚ç‚¹çš„æ—¶é—´  Unit:MILLISECONDS
      */
     private long delayTimeForClean = 1000;
 
     /**
-     * zk ¹²ÏíËøÊµÏÖ
+     * zk å…±äº«é”å®ç°
      */
     private InterProcessMutex interProcessMutex = null;
 
 
     /**
-     * ËøµÄID,¶ÔÓ¦zkÒ»¸öPERSISTENT½Úµã,ÏÂ¹ÒEPHEMERAL½Úµã.
+     * é”çš„ID,å¯¹åº”zkä¸€ä¸ªPERSISTENTèŠ‚ç‚¹,ä¸‹æŒ‚EPHEMERALèŠ‚ç‚¹.
      */
     private String path;
 
 
     /**
-     * zkµÄ¿Í»§¶Ë
+     * zkçš„å®¢æˆ·ç«¯
      */
     private CuratorFramework client;
 
@@ -107,7 +105,7 @@ public class ZkReentrantLock implements DistributedReentrantLock {
             } catch (KeeperException.NotEmptyException e2) {
                 //nothing
             } catch (Exception e) {
-                log.error(e.getMessage(), e);//×¼±¸É¾³ıÊ±,ÕıºÃÓĞÏß³Ì´´½¨Ëø
+                log.error(e.getMessage(), e);//å‡†å¤‡åˆ é™¤æ—¶,æ­£å¥½æœ‰çº¿ç¨‹åˆ›å»ºé”
             }
         }
     }
